@@ -70,9 +70,14 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
 
         self._artificial_force = 0.
 
+        # if not hasattr(self, 'observation_space'):
+        #     self.observation_space = spaces.Box(
+        #         low=-np.inf, high=np.inf, shape=(19,), dtype=np.float64
+        #     )
+
         if not hasattr(self, 'observation_space'):
             self.observation_space = spaces.Box(
-                low=-np.inf, high=np.inf, shape=(19,), dtype=np.float64
+                low=-np.inf, high=np.inf, shape=(19+1,), dtype=np.float64
             )
 
         MujocoEnv.__init__(self,
@@ -253,6 +258,7 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
             self.data.joint("tar_y").qpos.copy(),
             self.data.joint("tar_z").qpos.copy(),
             self._goal_pos.copy(),
+            np.float_(self._hit_ball)[None],
         ])
         return obs
 
