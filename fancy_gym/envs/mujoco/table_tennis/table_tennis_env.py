@@ -45,6 +45,7 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
         self._steps = 0
 
         self._hit_ball = False
+        self._hit_now = False
         self._ball_land_on_table = False
         self._ball_contact_after_hit = False
         self._ball_return_success = False
@@ -77,7 +78,7 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
 
         if not hasattr(self, 'observation_space'):
             self.observation_space = spaces.Box(
-                low=-np.inf, high=np.inf, shape=(19+1,), dtype=np.float64
+                low=-np.inf, high=np.inf, shape=(19+1+1,), dtype=np.float64
             )
 
         MujocoEnv.__init__(self,
@@ -164,20 +165,21 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
         if unstable_simulation:
             reward = -25
         else:
-            hit_now = not hit_already and self._hit_ball
-            if hit_now:
+            self._hit_now = not hit_already and self._hit_ball
+            if self._hit_now:
                 # Clean the ball and racket traj before hit
                 self._ball_traj = []
                 self._racket_traj = []
 
             land_now = not land_already and self._ball_landing_pos is not None
-            reward = self._get_reward(hit_now, land_now)
+            reward = self._get_reward(self._hit_now, land_now)
 
         land_dist_err = np.linalg.norm(self._ball_landing_pos[:-1] - self._goal_pos) \
                             if self._ball_landing_pos is not None else 10.
 
         info = {
             "hit_ball": self._hit_ball,
+            "hit_now": self._hit_now,
             "ball_returned_success": self._ball_return_success,
             "land_dist_error": land_dist_err,
             "is_success": self._ball_return_success and land_dist_err < 0.2,
@@ -235,6 +237,7 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
         mujoco.mj_forward(self.model, self.data)
 
         self._hit_ball = False
+        self._hit_now = False
         self._ball_land_on_table = False
         self._ball_contact_after_hit = False
         self._ball_return_success = False
@@ -259,6 +262,7 @@ class TableTennisEnv(MujocoEnv, utils.EzPickle):
             self.data.joint("tar_z").qpos.copy(),
             self._goal_pos.copy(),
             np.float_(self._hit_ball)[None],
+            np.float_(self._hit_now)[None],
         ])
         return obs
 
