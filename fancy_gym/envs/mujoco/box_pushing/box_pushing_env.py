@@ -97,7 +97,7 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
             reward = self._get_reward(episode_end, box_pos, box_quat, target_pos, target_quat,
                                       rod_tip_pos, rod_quat, qpos, qvel, action)
         else:
-            reward = -50
+            reward = None
 
         obs = self._get_obs()
         box_goal_pos_dist = 0. if not episode_end else np.linalg.norm(box_pos - target_pos)
