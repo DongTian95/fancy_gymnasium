@@ -76,7 +76,7 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
             unstable_simulation = True
 
         if self.data.warning[mujoco.mjtWarning.mjWARN_BADQACC].number > 0:
-            print("the error is successfully detected")
+            # print("the error is successfully detected")
             unstable_simulation = True
 
         self._steps += 1
