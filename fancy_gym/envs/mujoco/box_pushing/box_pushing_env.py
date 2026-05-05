@@ -52,7 +52,7 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
         self._episode_energy = 0.
 
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(28,), dtype=np.float64
+            low=-np.inf, high=np.inf, shape=(29,), dtype=np.float64
         )
 
         self.random_init = random_init
@@ -164,6 +164,7 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
 
     def _get_obs(self):
         obs = np.concatenate([
+            np.atleast_1d(self._steps).astype(np.float32),
             self.data.qpos[:7].copy(),  # joint position
             self.data.qvel[:7].copy(),  # joint velocity
             # self.data.qfrc_bias[:7].copy(),  # joint gravity compensation
